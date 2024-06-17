@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Email Client Layout</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      .left-side {
+        background-color: #efefef;
+        border: 0.5px solid;
+      }
+
+      .right-side {
+        background-color: #9e9e9e63;
+        border: 0.5px solid;
+      }
+
+      .li-item {
+        border-bottom: 0.2px solid;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <% if (user) { %>
+        <div class="col-12 text-right p-3">
+          <a id="loginBtn" class="btn btn-primary" href="/api/Logout">Logout</a>
+        </div>
+        <% } else { %>
+        <div class="col-12 text-center">
+          <h4>Welcome to Innoscripta</h4>
+          <a id="loginBtn" class="btn btn-primary" href="/api/outlook/connect"
+            >Login</a
+          >
+        </div>
+        <% } %>
+      </div>
+      <% if (user) { %>
+      <div class="row">
+        <div class="col-3 left-side">
+          <!-- Sidebar content here -->
+          <ul id="list-group" class="list-group"></ul>
+        </div>
+        <div class="col-9 right-side">
+          <!-- Main content here -->
+          <h5 id="subject">.</h5>
+          <h6 id="sender">.</h6>
+          <p id="content"></p>
+          <p id="date"></p>
+        </div>
+      </div>
+      <% } %>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      let emails;
+
+      async function showEmail(email_id) {
+        email = emails.find((email) => email.email_id === email_id);
+        const subject = document.getElementById("subject");
+        subject.textContent = email.subject;
+
+        const sender = document.getElementById("sender");
+        sender.textContent = email.sender;
+
+        const content = document.getElementById("content");
+        content.innerHTML = email.content;
+
+        const date = document.getElementById("date");
+        date.innerHTML = email.received_date;
+      }
+
+      async function fetchEmailData() {
+        const response = await fetch("/api/email");
+        emails = await response.json();
+        const emailList = document.getElementById("list-group");
+        emailList.innerHTML = "";
+        emails.forEach((email) => {
+          const li = document.createElement("li");
+          li.id = email.email_id;
+          li.className = "list-group li-item";
+          li.innerHTML = `
+          <strong>${email.sender}</strong> <br>
+          <small>${email.subject}</small>
+          <div class="email-icons">
+            ${
+              email.isRead
+                ? '<i class="fas fa-envelope-open"></i>'
+                : '<i class="fas fa-envelope"></i>'
+            }
+            ${email.flag ? '<i class="fas fa-flag"></i>' : ""}
+            ${email.hasAttachments ? '<i class="fas fa-paperclip"></i>' : ""}
+          </div>`;
+          li.onclick = () => showEmail(email.email_id);
+          emailList.appendChild(li);
+        });
+      }
+      setInterval(fetchEmailData, 5000);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,33 @@
+language: node_js
+
+node_js:
+  - "16"
+
+jobs:
+  include:
+    - stage: 'Tests'
+      name: 'Build the app'
+      script:
+        - echo "Running"
+      
+    - stage: 'Deploy'
+      name: 'Deployment'
+      if: fork = false AND branch = master AND type IN (push, api)
+      script:
+        - ./script/deploy.sh
+
+cache:
+  - bundler
+  - npm
+  - pip
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install build-essential
+  # Install Linuxbrew
+  - sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+  # Add Linuxbrew to PATH
+  - echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.profile
+  - eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  - chmod +x ./script/deploy.sh
+  

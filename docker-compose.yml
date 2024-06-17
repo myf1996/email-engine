@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+    networks:
+      - esnet
+
+  app:
+    build: .
+    container_name: app
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - CLIENT_ID=
+      - CLIENT_SECRET=
+      - SECRET_KEY=
+      - REDIRECT_URI=http://localhost:3000/api/outlook/callback
+      - WEBHOOK_URL=https://d5c4-91-5-240-152.ngrok-free.app/api/outlook/webhook
+    ports:
+      - "3000:3000"
+    depends_on:
+      - elasticsearch
+    networks:
+      - esnet
+
+networks:
+  esnet:
+    driver: bridge

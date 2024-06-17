@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email-core-engine-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: email-core-engine
+  template:
+    metadata:
+      labels:
+        app: email-core-engine
+    spec:
+      containers:
+      - name: email-core-engine
+        image: email-core-engine:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: ELASTICSEARCH_URL
+          value: "http://elasticsearch:9200"
+        - name: CLIENT_ID
+          value: ""
+        - name: CLIENT_SECRET
+          value: ""
+        - name: SECRET_KEY
+          value: ""
+        - name: REDIRECT_URI
+          value: "http://localhost:3000/api/outlook/callback"

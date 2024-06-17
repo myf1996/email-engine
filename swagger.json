@@ -1,0 +1,266 @@
+{
+  "swagger": "2.0",
+  "basePath": "/api/",
+  "info": {
+    "version": "1.0.0",
+    "title": "Innoscripta"
+  },
+  "tags": [
+    {
+      "name": "Innoscripta",
+      "description": "Innoscripta Email"
+    }
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json; charset=utf-8",
+    "application/json"
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Innoscripta is healthy."
+          }
+        }
+      }
+    },
+    "/elasticsearch/ping": {
+      "get": {
+        "tags": [
+          "Elastic Search"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Elasticsearch cluster is up!"
+          },
+          "500": {
+            "description": "Elasticsearch cluster is down!"
+          }
+        }
+      }
+    },
+    "/outlook/connect": {
+      "get": {
+        "tags": [
+          "Outlook"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "300": {
+            "description": "Redirect to Microsft Login"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/outlook/callback": {
+      "get": {
+        "tags": [
+          "Outlook"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in":"query",
+            "name":"code",
+            "required": true,
+            "type": "string",
+            "minLength": 1
+          }
+        ],
+        "responses": {
+          "300": {
+            "description": "Redirect to index UI page"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/outlook/webhook": {
+      "post": {
+        "tags": [
+          "Outlook"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "300": {
+            "description": "Webhook: Email Notification"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/email": {
+      "get": {
+        "tags": [
+          "Sync"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Fetching User Emails",
+            "schema": {
+              "$ref": "#/definitions/email"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "email": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string"
+        },
+        "email_id": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "sender": {
+          "type": "string"
+        },
+        "received_date": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "hasAttachments": {
+          "type": "boolean"
+        },
+        "isRead": {
+          "type": "boolean"
+        },
+        "isDraft": {
+          "type": "boolean"
+        },
+        "flag": {
+          "type": "boolean"
+        },
+        "importance": {
+          "type": "string"
+        },
+        "dump": {
+          "type": "object"
+        }
+      }
+    },
+    "badRequest": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "integer"
+        },
+        "ref": {
+          "type": "string"
+        },
+        "Method": {
+          "type": "string"
+        },
+        "Url": {
+          "type": "string"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/error"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "error": {
+      "type": "object",
+      "properties": {
+        "keyword": {
+          "type": "string"
+        },
+        "dataPath": {
+          "type": "string"
+        },
+        "schemaPath": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object"
+        },
+        "message": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "params": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "message": {
+                "type": "string"
+              },
+              "path": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
